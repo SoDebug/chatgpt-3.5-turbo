@@ -1,6 +1,6 @@
 {
-  "name": "chat-gpt-google-extension",
-  "author": "wong2",
+  "name": "chatgpt-3.5-turbo",
+  "author": "lujijiang",
   "scripts": {
     "build": "node build.mjs",
     "lint": "eslint --ext .js,.mjs,.jsx .",
