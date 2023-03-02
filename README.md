@@ -13,10 +13,6 @@ Support cheap gpt-3.5-turbo model.
 
 A browser extension to display ChatGPT response alongside Google (and other search engines) results
 
-[Install from Chrome Web Store](https://chatgpt4google.com/chrome?utm_source=github)
-
-[Install from Mozilla Add-on Store](https://chatgpt4google.com/firefox?utm_source=github)
-
 [Changelog](https://chatgpt-for-google.canny.io/changelog)
 
 ## Supported Search Engines
