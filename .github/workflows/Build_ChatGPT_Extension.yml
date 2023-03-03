@@ -12,11 +12,11 @@ jobs:
       uses: actions/checkout@v2
 
     - name: Get Last Successful Build SHA and Branch
-      id: main
+      id: last_build
       uses: tj-actions/git-info@v2.2
       with:
         property: branch_sha
-        branch: ${{ env.GITHUB_REF }}
+        branch: main
         token: ${{ secrets.GITHUB_TOKEN }}
         actions_step_debug: true
 
