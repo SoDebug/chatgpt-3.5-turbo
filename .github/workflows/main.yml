@@ -1,4 +1,4 @@
-name: Build ChatGPT Extension
+name: Build_ChatGPT_Extension
 
 on:
   workflow_dispatch:
@@ -17,10 +17,16 @@ jobs:
     - name: Build
       run: npm run build
 
-    - name: Load build to Release
+    - name: Load chrome build to Release
       uses: actions/upload-artifact@v2
       with:
-        name: Browser Build
+        name: Browser Build for Chrome
+        path: build/chromium/
+        
+    - name: Load firefox build to Release
+      uses: actions/upload-artifact@v2
+      with:
+        name: Browser Build for Firefox
         path: build/chromium/
 
     
