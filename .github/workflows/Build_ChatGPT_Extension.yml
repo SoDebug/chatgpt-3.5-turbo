@@ -59,14 +59,28 @@ jobs:
         name: Browser Build for Firefox
         path: gptchat_extension_firefox.zip
            
-    - name: Uploading Kernel Package to GH-Release
-      uses: ncipollo/release-action@v1.8.6
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1.0.0
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        artifacts: gptchat_extension.zip
-        name: " gptchat_extension "
-        tag: " ${{ github.run_number }}_gptchat_extension"
-        bodyFile: "commits.txt"
-        token: ${{ secrets.GITHUB_TOKEN }}
+        tag_name: v${{ github.run_number }}
+        release_name: Release v${{ github.run_number }}
+        body_file: commits.txt # Use commits.txt as the release body
+        draft: false
+        prerelease: false
+
+    - name: Upload Release Asset
+      id: upload-release-asset
+      uses: actions/upload-release-asset@v1.0.1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
         
+        asset_path: ./build/chromium/gptchat_extension.zip
+        asset_name: gptchat_extension
+        asset_content_type: application/zip
 
 
