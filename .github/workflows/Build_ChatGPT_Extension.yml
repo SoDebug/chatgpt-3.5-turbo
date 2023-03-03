@@ -11,22 +11,70 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
+    - name: Get Last Successful Build SHA and Branch
+      id: last_build
+      uses: tj-actions/git-info@v2.2
+      with:
+        property: branch_sha
+        branch: ${{ env.GITHUB_REF }}
+        token: ${{ secrets.GITHUB_TOKEN }}
+        actions_step_debug: true
+
+    - name: Get All Commits Since Last Build
+      id: get_commits
+      run: |
+        git log --pretty=oneline --abbrev-commit --no-decorate ${LAST_BUILD_SHA}..${GITHUB_SHA} > commits.txt
+      env:
+        LAST_BUILD_SHA: ${{ steps.last_build.outputs.branch_sha }}
+        GITHUB_SHA: ${{ github.sha }}
+
     - name: Install Dependencies
       run: npm install
 
     - name: Build
       run: npm run build
-
-    - name: Load chrome build to Release
+      
+    - name: Patch Extension
+      run: |
+        7z a -r -tzip gptchat_extension_chrome.zip build/chromium/
+        7z a -r -tzip gptchat_extension_firefox.zip build/firefox/
+        7z a -r -tzip gptchat_extension.zip ./gptchat_extension_chrome.zip ./gptchat_extension_firefox.zip
+        
+    - name: Load Chrome Build
       uses: actions/upload-artifact@v2
       with:
         name: Browser Build for Chrome
-        path: build/chromium/
+        path: gptchat_extension_chrome.zip
         
-    - name: Load firefox build to Release
+    - name: Load Firefox Build
       uses: actions/upload-artifact@v2
       with:
         name: Browser Build for Firefox
-        path: build/chromium/
+        path: gptchat_extension_firefox.zip
+        
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1.0.0
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: v${{ github.run_number }}
+        release_name: Release v${{ github.run_number }}
+        body_file: commits.txt # Use commits.txt as the release body
+        draft: false
+        prerelease: false
 
-    
+    - name: Upload Release Asset
+      id: upload-release-asset
+      uses: actions/upload-release-asset@v1.0.1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        
+        asset_path: ./build/chromium/gptchat_extension.zip
+        asset_name: gptchat_extension
+        asset_content_type: application/zip
+        
+
+
