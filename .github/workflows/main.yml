@@ -1,0 +1,26 @@
+name: Build ChatGPT Extension
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build_and_release:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Install Dependencies
+      run: npm install
+
+    - name: Build
+      run: npm run build
+
+    - name: Load build to Release
+      uses: actions/upload-artifact@v2
+      with:
+        name: Browser Build
+        path: build/chromium/
+
+    
